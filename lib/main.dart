@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_personal_expense_app/transaction.dart';
+import 'package:flutter_personal_expense_app/models/transaction.dart';
+import 'package:flutter_personal_expense_app/widgets/new_transaction.dart';
+import 'package:flutter_personal_expense_app/widgets/transaction_list.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,9 +12,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Title',
-      home: Home(),
+    return MaterialApp(
+      title: 'Personal Expense',
+      home: const Home(),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        accentColor: Colors.red,
+        fontFamily: 'Quicksand',
+        textTheme: ThemeData.light().textTheme.copyWith(
+                headline6: TextStyle(
+              fontFamily: 'OpenSans',
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            )),
+        appBarTheme: AppBarTheme(
+          titleTextStyle: TextStyle(
+            fontFamily: 'OpenSans',
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -25,7 +45,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final List<Transaction> transactions = [
+  final List<Transaction> _transactions = [
     Transaction(
       id: '0',
       title: 'Title1',
@@ -46,14 +66,41 @@ class _HomeState extends State<Home> {
     ),
   ];
 
+  void _addTransaction(String title, double amount) {
+    final newTransaction = Transaction(
+      id: DateTime.now().toString(),
+      title: title,
+      amount: amount,
+      date: DateTime.now(),
+    );
+
+    setState(() {
+      _transactions.add(newTransaction);
+    });
+  }
+
+  void _showModal(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (_) {
+          return NewTransaction(_addTransaction);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Title'),
-        ),
-        body: Column(children: <Widget>[
+    return Scaffold(
+      appBar: AppBar(
+        actions: <Widget>[
+          IconButton(
+            onPressed: () => {_showModal(context)},
+            icon: const Icon(Icons.add),
+          )
+        ],
+        title: const Text('Personal Expense'),
+      ),
+      body: SingleChildScrollView(
+        child: Column(children: <Widget>[
           Card(
             child: Container(
               child: const Text(
@@ -61,54 +108,17 @@ class _HomeState extends State<Home> {
                 textAlign: TextAlign.center,
               ),
               width: MediaQuery.of(context).size.width,
-              color: Colors.blue,
+              color: Theme.of(context).primaryColorDark,
             ),
             elevation: 10,
           ),
-          Column(
-              children: transactions.map((e) {
-            return Card(
-              child: Row(
-                children: <Widget>[
-                  Container(
-                    margin: const EdgeInsets.all(20),
-                    child: Text(
-                      e.amount.toString(),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30,
-                        color: Colors.red,
-                      ),
-                    ),
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 1,
-                      ),
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        e.title,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        e.date.toString(),
-                        style: const TextStyle(color: Colors.grey),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            );
-          }).toList())
+          TransactionList(_transactions),
         ]),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () => {_showModal(context)},
       ),
     );
   }
