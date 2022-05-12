@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_personal_expense_app/models/transaction.dart';
+import 'package:flutter_personal_expense_app/widgets/chart.dart';
 import 'package:flutter_personal_expense_app/widgets/new_transaction.dart';
 import 'package:flutter_personal_expense_app/widgets/transaction_list.dart';
 
@@ -20,12 +21,12 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.red,
         fontFamily: 'Quicksand',
         textTheme: ThemeData.light().textTheme.copyWith(
-                headline6: TextStyle(
+                headline6: const TextStyle(
               fontFamily: 'OpenSans',
               fontSize: 20,
               fontWeight: FontWeight.bold,
             )),
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           titleTextStyle: TextStyle(
             fontFamily: 'OpenSans',
             fontSize: 25,
@@ -45,26 +46,19 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final List<Transaction> _transactions = [
-    Transaction(
-      id: '0',
-      title: 'Title1',
-      amount: 10.00,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: '1',
-      title: 'Title2',
-      amount: 29.00,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: '2',
-      title: 'Title3',
-      amount: 32.00,
-      date: DateTime.now(),
-    ),
-  ];
+  final List<Transaction> _transactions = [];
+
+  List<Transaction> get _recentTransaction {
+    return _transactions.where((element) {
+      return element.date.isAfter(
+        DateTime.now().subtract(
+          const Duration(
+            days: 7,
+          ),
+        ),
+      );
+    }).toList();
+  }
 
   void _addTransaction(String title, double amount) {
     final newTransaction = Transaction(
@@ -101,21 +95,11 @@ class _HomeState extends State<Home> {
       ),
       body: SingleChildScrollView(
         child: Column(children: <Widget>[
-          Card(
-            child: Container(
-              child: const Text(
-                'Card',
-                textAlign: TextAlign.center,
-              ),
-              width: MediaQuery.of(context).size.width,
-              color: Theme.of(context).primaryColorDark,
-            ),
-            elevation: 10,
-          ),
+          Chart(transactions: _recentTransaction),
           TransactionList(_transactions),
         ]),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () => {_showModal(context)},
