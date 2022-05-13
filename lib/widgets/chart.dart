@@ -36,18 +36,20 @@ class Chart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 15,
-      margin: const EdgeInsets.all(20),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Row(
-            children: groupedTransactionValues.map((e) {
-          return Expanded(
-            child: ChartBar((e['day'] as String), (e['amount'] as double),
-                maxAmount == 0.0 ? 0.0 : (e['amount'] as double) / maxAmount),
-          );
-        }).toList()),
+    return SizedBox(
+      child: Card(
+        elevation: 15,
+        margin: const EdgeInsets.all(20),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+              children: groupedTransactionValues.map((e) {
+            return Expanded(
+              child: ChartBar((e['day'] as String), (e['amount'] as double),
+                  maxAmount == 0.0 ? 0.0 : (e['amount'] as double) / maxAmount),
+            );
+          }).toList()),
+        ),
       ),
     );
   }

@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_personal_expense_app/models/transaction.dart';
 import 'package:flutter_personal_expense_app/widgets/chart.dart';
 import 'package:flutter_personal_expense_app/widgets/new_transaction.dart';
 import 'package:flutter_personal_expense_app/widgets/transaction_list.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeRight,
+    DeviceOrientation.landscapeLeft,
+  ]);
   runApp(const MyApp());
 }
 
@@ -14,6 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Personal Expense',
       home: const Home(),
       theme: ThemeData(
@@ -47,6 +54,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final List<Transaction> _transactions = [];
+  bool _showChart = false;
 
   List<Transaction> get _recentTransaction {
     return _transactions.where((element) {
@@ -89,21 +97,68 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final bool _isLandscape = mediaQuery.orientation == Orientation.landscape;
+
+    final AppBar appBar = AppBar(
+      actions: <Widget>[
+        IconButton(
+          onPressed: () => {_showModal(context)},
+          icon: const Icon(Icons.add),
+        )
+      ],
+      title: const Text('Personal Expense'),
+    );
+
+    final Widget transactionListWidget = SizedBox(
+      height: (mediaQuery.size.height -
+              appBar.preferredSize.height -
+              mediaQuery.padding.top) *
+          0.7,
+      child: TransactionList(_transactions, _deleteTransaction),
+    );
+
     return Scaffold(
-      appBar: AppBar(
-        actions: <Widget>[
-          IconButton(
-            onPressed: () => {_showModal(context)},
-            icon: const Icon(Icons.add),
-          )
-        ],
-        title: const Text('Personal Expense'),
-      ),
-      body: SingleChildScrollView(
-        child: Column(children: <Widget>[
-          Chart(transactions: _recentTransaction),
-          TransactionList(_transactions, _deleteTransaction),
-        ]),
+      appBar: appBar,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(children: <Widget>[
+            if (_isLandscape)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  const Text('Show Chart'),
+                  Switch(
+                    value: _showChart,
+                    onChanged: (val) {
+                      setState(() {
+                        _showChart = val;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            if (!_isLandscape)
+              SizedBox(
+                height: (mediaQuery.size.height -
+                        appBar.preferredSize.height -
+                        mediaQuery.padding.top) *
+                    0.3,
+                child: Chart(transactions: _recentTransaction),
+              ),
+            if (!_isLandscape) transactionListWidget,
+            if (_isLandscape)
+              _showChart
+                  ? SizedBox(
+                      height: (mediaQuery.size.height -
+                              appBar.preferredSize.height -
+                              mediaQuery.padding.top) *
+                          0.7,
+                      child: Chart(transactions: _recentTransaction),
+                    )
+                  : transactionListWidget,
+          ]),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(

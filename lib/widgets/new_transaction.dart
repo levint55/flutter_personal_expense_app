@@ -55,56 +55,60 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-        child: Column(
-          children: <Widget>[
-            TextField(
-              decoration: const InputDecoration(labelText: 'Title'),
-              controller: _titleController,
-              onSubmitted: (_) => _submit(),
-            ),
-            TextField(
-              decoration: const InputDecoration(labelText: 'Amount'),
-              controller: _amountController,
-              keyboardType: TextInputType.number,
-              onSubmitted: (_) => _submit(),
-            ),
-            SizedBox(
-              height: 70,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: _selectedDate == null
-                        ? const Text(
-                            'No Date Chosen!',
-                          )
-                        : Text(
-                            'Picked Date: ${DateFormat.yMMMd().format(_selectedDate!)}',
-                          ),
-                  ),
-                  TextButton(
-                    onPressed: _showDatePicker,
-                    child: const Text('Choose Date'),
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.all(
-                          Theme.of(context).primaryColor),
-                      textStyle: MaterialStateProperty.all(
-                        const TextStyle(fontWeight: FontWeight.bold),
+    final mediaQuery = MediaQuery.of(context);
+    print(mediaQuery.viewInsets.bottom);
+    return SingleChildScrollView(
+      child: Card(
+        child: Container(
+          padding: EdgeInsets.only(bottom: mediaQuery.viewInsets.bottom + 10),
+          child: Column(
+            children: <Widget>[
+              TextField(
+                decoration: const InputDecoration(labelText: 'Title'),
+                controller: _titleController,
+                onSubmitted: (_) => _submit(),
+              ),
+              TextField(
+                decoration: const InputDecoration(labelText: 'Amount'),
+                controller: _amountController,
+                keyboardType: TextInputType.number,
+                onSubmitted: (_) => _submit(),
+              ),
+              SizedBox(
+                height: 70,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: _selectedDate == null
+                          ? const Text(
+                              'No Date Chosen!',
+                            )
+                          : Text(
+                              'Picked Date: ${DateFormat.yMMMd().format(_selectedDate!)}',
+                            ),
+                    ),
+                    TextButton(
+                      onPressed: _showDatePicker,
+                      child: const Text('Choose Date'),
+                      style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.all(
+                            Theme.of(context).primaryColor),
+                        textStyle: MaterialStateProperty.all(
+                          const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Container(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton(
-                  onPressed: () => _submit(),
-                  child: const Text('Add Transaction')),
-            ),
-          ],
+              Container(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                    onPressed: () => _submit(),
+                    child: const Text('Add Transaction')),
+              ),
+            ],
+          ),
         ),
       ),
     );
