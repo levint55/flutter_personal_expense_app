@@ -25,7 +25,7 @@ class Chart extends StatelessWidget {
         'day': DateFormat.E().format(weekDay).substring(0, 1),
         'amount': totalSum
       };
-    });
+    }).reversed.toList();
   }
 
   double get maxAmount {
@@ -42,18 +42,12 @@ class Chart extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: groupedTransactionValues.map((e) {
-              return Flexible(
-                fit: FlexFit.tight,
-                child: ChartBar(
-                    (e['day'] as String),
-                    (e['amount'] as double),
-                    maxAmount == 0.0
-                        ? 0.0
-                        : (e['amount'] as double) / maxAmount),
-              );
-            }).toList()),
+          return Expanded(
+            child: ChartBar((e['day'] as String), (e['amount'] as double),
+                maxAmount == 0.0 ? 0.0 : (e['amount'] as double) / maxAmount),
+          );
+        }).toList()),
       ),
     );
   }

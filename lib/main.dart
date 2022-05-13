@@ -60,16 +60,22 @@ class _HomeState extends State<Home> {
     }).toList();
   }
 
-  void _addTransaction(String title, double amount) {
+  void _addTransaction(String title, double amount, DateTime date) {
     final newTransaction = Transaction(
       id: DateTime.now().toString(),
       title: title,
       amount: amount,
-      date: DateTime.now(),
+      date: date,
     );
 
     setState(() {
       _transactions.add(newTransaction);
+    });
+  }
+
+  void _deleteTransaction(String id) {
+    setState(() {
+      _transactions.removeWhere((element) => element.id == id);
     });
   }
 
@@ -96,7 +102,7 @@ class _HomeState extends State<Home> {
       body: SingleChildScrollView(
         child: Column(children: <Widget>[
           Chart(transactions: _recentTransaction),
-          TransactionList(_transactions),
+          TransactionList(_transactions, _deleteTransaction),
         ]),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
