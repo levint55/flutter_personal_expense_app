@@ -6,7 +6,7 @@ import 'package:flutter_personal_expense_app/widgets/transaction_list.dart';
 
 void main() {
   runApp(const MyApp());
-  print("asd");
+  print("as");
 }
 
 class MyApp extends StatelessWidget {
