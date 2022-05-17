@@ -56,7 +56,6 @@ class _NewTransactionState extends State<NewTransaction> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    print(mediaQuery.viewInsets.bottom);
     return SingleChildScrollView(
       child: Card(
         child: Container(
